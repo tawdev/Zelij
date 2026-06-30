@@ -113,14 +113,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCartItems((prev) =>
       prev.map((i) => {
         if (i.cartItemId !== cartItemId || !i.area) return i;
-        const oldArea = i.area.totalAreaM2;
-        const newArea = width * height;
+        const w = Number(width);
+        const h = Number(height);
+        const oldArea = Number(i.area.totalAreaM2);
+        const newArea = w * h;
         const unitPrice = oldArea > 0 ? Number(i.price) / oldArea : 0;
         return {
           ...i,
           quantity: newArea,
           price: unitPrice * newArea,
-          area: { ...i.area, width, height, totalAreaM2: newArea },
+          area: { ...i.area, width: w, height: h, totalAreaM2: newArea },
         };
       })
     );

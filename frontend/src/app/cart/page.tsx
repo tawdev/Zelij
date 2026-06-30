@@ -216,7 +216,7 @@ export default function ShoppingCartPage() {
                                                 <div className="flex items-center bg-canvas-alt rounded-xl p-1">
                                                     <span className="text-[9px] font-black uppercase tracking-wider text-charcoal-muted pl-2">Width</span>
                                                     <button
-                                                        onClick={() => updateItemDimensions(item.cartItemId, Math.max(0.5, item.area!.width - 0.5), item.area!.height)}
+                                                        onClick={() => updateItemDimensions(item.cartItemId, Math.max(0.5, Number(item.area!.width) - 0.5), Number(item.area!.height))}
                                                         className="w-8 h-8 flex items-center justify-center text-charcoal-muted hover:text-charcoal transition-colors"
                                                     >
                                                         <Minus size={14} />
@@ -229,13 +229,13 @@ export default function ShoppingCartPage() {
                                                         onChange={(e) => {
                                                             const w = parseFloat(e.target.value);
                                                             if (!isNaN(w) && w > 0) {
-                                                                updateItemDimensions(item.cartItemId, w, item.area!.height);
+                                                                updateItemDimensions(item.cartItemId, w, Number(item.area!.height));
                                                             }
                                                         }}
                                                         className="w-20 text-center font-black text-charcoal text-sm bg-transparent border-0 ring-0 focus:ring-0 focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                                                     />
                                                     <button
-                                                        onClick={() => updateItemDimensions(item.cartItemId, item.area!.width + 0.5, item.area!.height)}
+                                                        onClick={() => updateItemDimensions(item.cartItemId, Number(item.area!.width) + 0.5, Number(item.area!.height))}
                                                         className="w-8 h-8 flex items-center justify-center text-charcoal-muted hover:text-charcoal transition-colors"
                                                     >
                                                         <Plus size={14} />
@@ -245,7 +245,7 @@ export default function ShoppingCartPage() {
                                                 <div className="flex items-center bg-canvas-alt rounded-xl p-1">
                                                     <span className="text-[9px] font-black uppercase tracking-wider text-charcoal-muted pl-2">Height</span>
                                                     <button
-                                                        onClick={() => updateItemDimensions(item.cartItemId, item.area!.width, Math.max(0.5, item.area!.height - 0.5))}
+                                                        onClick={() => updateItemDimensions(item.cartItemId, Number(item.area!.width), Math.max(0.5, Number(item.area!.height) - 0.5))}
                                                         className="w-8 h-8 flex items-center justify-center text-charcoal-muted hover:text-charcoal transition-colors"
                                                     >
                                                         <Minus size={14} />
@@ -258,13 +258,13 @@ export default function ShoppingCartPage() {
                                                         onChange={(e) => {
                                                             const h = parseFloat(e.target.value);
                                                             if (!isNaN(h) && h > 0) {
-                                                                updateItemDimensions(item.cartItemId, item.area!.width, h);
+                                                                updateItemDimensions(item.cartItemId, Number(item.area!.width), h);
                                                             }
                                                         }}
                                                         className="w-20 text-center font-black text-charcoal text-sm bg-transparent border-0 ring-0 focus:ring-0 focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                                                     />
                                                     <button
-                                                        onClick={() => updateItemDimensions(item.cartItemId, item.area!.width, item.area!.height + 0.5)}
+                                                        onClick={() => updateItemDimensions(item.cartItemId, Number(item.area!.width), Number(item.area!.height) + 0.5)}
                                                         className="w-8 h-8 flex items-center justify-center text-charcoal-muted hover:text-charcoal transition-colors"
                                                     >
                                                         <Plus size={14} />
