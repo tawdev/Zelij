@@ -9,6 +9,27 @@ export default function AdminReviewsPage() {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'pending' | 'approved' | 'rejected'>('pending');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const paginatedReviews = reviews.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const totalPages = Math.ceil(reviews.length / itemsPerPage);
+
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = [];
+        if (totalPages <= 3) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            if (currentPage <= 2) { pages.push(1, 2, 3); }
+            else if (currentPage >= totalPages - 1) { pages.push(totalPages - 2, totalPages - 1, totalPages); }
+            else { pages.push(currentPage - 1, currentPage, currentPage + 1); }
+        }
+        return pages;
+    };
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [activeTab]);
 
     useEffect(() => {
         loadReviews();
@@ -104,8 +125,8 @@ export default function AdminReviewsPage() {
 
                     {/* Review List */}
                     {reviews.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-6">
-                            {reviews.map((review) => (
+                        <><div className="grid grid-cols-1 gap-6">
+                            {paginatedReviews.map((review) => (
                                 <div key={review.id} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between transition-all hover:shadow-md">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
@@ -177,6 +198,25 @@ export default function AdminReviewsPage() {
                                 </div>
                             ))}
                         </div>
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between pt-6">
+                                <span className="text-xs text-slate-500 font-medium">{reviews.length} avis</span>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="size-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 disabled:opacity-30 transition-all">
+                                        <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                                    </button>
+                                    {getPageNumbers().map((page, i) => (
+                                        <button key={i} onClick={() => setCurrentPage(page as number)} className={`size-8 rounded-lg font-bold text-xs transition-all ${currentPage === page ? 'bg-primary text-white shadow-lg shadow-primary/10' : 'text-slate-500 hover:bg-slate-100'}`}>
+                                            {page}
+                                        </button>
+                                    ))}
+                                    <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="size-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 disabled:opacity-30 transition-all">
+                                        <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        </>
                     ) : (
                         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
                             <div className="w-16 h-16 mb-6 text-slate-300 flex items-center justify-center">

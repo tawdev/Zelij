@@ -356,7 +356,7 @@ export default function AdminAnalyticsPage() {
                                             </div>
                                             <div className="h-3 w-full bg-slate-50 rounded-full overflow-hidden">
                                                 <div
-                                                    className={`h-full ${item.color} shadow-lg shadow-${item.color.split('-')[1]}-500/20 transition-all duration-1000`}
+                                                    className={`h-full ${item.color} shadow-sm transition-all duration-1000`}
                                                     style={{ width: `${(item.value / item.total) * 100}%` }}
                                                 />
                                             </div>

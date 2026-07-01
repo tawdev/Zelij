@@ -54,7 +54,7 @@ export default function AdminDashboardPage() {
         setOrderStats(oStats);
         setRecentOrders(orders.data);
       } catch {
-        setError('Failed to connect to the backend. Make sure the server is running on port 3001.');
+        setError('Failed to connect to the backend. Make sure the server is running on port 3002.');
       } finally {
         setLoading(false);
       }

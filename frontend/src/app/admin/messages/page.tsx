@@ -15,6 +15,12 @@ export default function AdminMessagesPage() {
     const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
     const [adminNote, setAdminNote] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 20;
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [statusFilter]);
 
     useEffect(() => {
         loadMessages();
@@ -38,9 +44,7 @@ export default function AdminMessagesPage() {
             await api.updateContactStatus(id, status, adminNote);
             showToast('Statut mis à jour.', 'success');
             loadMessages();
-            if (selectedMessage?.id === id) {
-                setSelectedMessage({ ...selectedMessage, status, adminNote });
-            }
+            setSelectedMessage(prev => prev && prev.id === id ? { ...prev, status, adminNote } : prev);
         } catch (error) {
             showToast('Erreur lors de la mise à jour.', 'error');
         }
@@ -69,6 +73,21 @@ export default function AdminMessagesPage() {
     const filteredMessages = messages.filter(m => 
         statusFilter === 'all' || m.status === statusFilter
     );
+
+    const paginatedMessages = filteredMessages.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const totalPages = Math.ceil(filteredMessages.length / itemsPerPage);
+
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = [];
+        if (totalPages <= 3) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            if (currentPage <= 2) { pages.push(1, 2, 3); }
+            else if (currentPage >= totalPages - 1) { pages.push(totalPages - 2, totalPages - 1, totalPages); }
+            else { pages.push(currentPage - 1, currentPage, currentPage + 1); }
+        }
+        return pages;
+    };
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -126,8 +145,8 @@ export default function AdminMessagesPage() {
                 {/* List View */}
                 <div className={`w-full md:w-1/3 border-r border-slate-200 bg-white overflow-y-auto no-scrollbar transition-all duration-300 ${selectedMessage ? 'hidden md:block' : 'block'}`}>
                     {filteredMessages.length > 0 ? (
-                        <div className="divide-y divide-slate-100">
-                            {filteredMessages.map((msg) => (
+                        <><div className="divide-y divide-slate-100">
+                            {paginatedMessages.map((msg) => (
                                 <div 
                                     key={msg.id}
                                     onClick={() => {
@@ -159,6 +178,25 @@ export default function AdminMessagesPage() {
                                 </div>
                             ))}
                         </div>
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100">
+                                <span className="text-[11px] text-slate-500 font-medium">{filteredMessages.length} message{filteredMessages.length !== 1 ? 's' : ''}</span>
+                                <div className="flex items-center gap-1">
+                                    <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="size-7 flex items-center justify-center rounded text-slate-400 hover:text-slate-900 hover:bg-slate-100 disabled:opacity-30 transition-all">
+                                        <span className="material-symbols-outlined text-[16px]">chevron_left</span>
+                                    </button>
+                                    {getPageNumbers().map((page, i) => (
+                                        <button key={i} onClick={() => setCurrentPage(page as number)} className={`size-7 rounded font-bold text-[11px] transition-all ${currentPage === page ? 'bg-primary text-white shadow-lg shadow-primary/10' : 'text-slate-500 hover:bg-slate-100'}`}>
+                                            {page}
+                                        </button>
+                                    ))}
+                                    <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="size-7 flex items-center justify-center rounded text-slate-400 hover:text-slate-900 hover:bg-slate-100 disabled:opacity-30 transition-all">
+                                        <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        </>
                     ) : (
                         <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
                             <span className="material-symbols-outlined text-[48px] text-slate-200 mb-3">inbox</span>

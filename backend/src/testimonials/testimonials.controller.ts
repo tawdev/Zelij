@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { TestimonialsService } from './testimonials.service';
-import { Testimonial } from './testimonial.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CreateTestimonialDto, UpdateTestimonialDto } from './dto/create-testimonial.dto';
 
 @Controller('testimonials')
 export class TestimonialsController {
@@ -20,13 +20,13 @@ export class TestimonialsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Body() data: Partial<Testimonial>) {
+  create(@Body() data: CreateTestimonialDto) {
     return this.testimonialsService.create(data);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() data: Partial<Testimonial>) {
+  update(@Param('id') id: string, @Body() data: UpdateTestimonialDto) {
     return this.testimonialsService.update(+id, data);
   }
 

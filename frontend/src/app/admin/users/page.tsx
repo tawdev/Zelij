@@ -20,6 +20,23 @@ export default function UsersManagementPage() {
         isActive: true,
     });
     const [showPassword, setShowPassword] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const paginatedUsers = users.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const totalPages = Math.ceil(users.length / itemsPerPage);
+
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = [];
+        if (totalPages <= 3) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            if (currentPage <= 2) { pages.push(1, 2, 3); }
+            else if (currentPage >= totalPages - 1) { pages.push(totalPages - 2, totalPages - 1, totalPages); }
+            else { pages.push(currentPage - 1, currentPage, currentPage + 1); }
+        }
+        return pages;
+    };
 
     const fetchUsers = async () => {
         try {
@@ -130,7 +147,7 @@ export default function UsersManagementPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
-                                    {users.map((u) => (
+                                    {paginatedUsers.map((u) => (
                                         <tr key={u.id} className="hover:bg-slate-50/50 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
@@ -189,6 +206,26 @@ export default function UsersManagementPage() {
                                 </tbody>
                             </table>
                         </div>
+                        {totalPages > 1 && (
+                            <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
+                                <span className="text-xs text-slate-500 font-medium">
+                                    {users.length} utilisateur{users.length !== 1 ? 's' : ''}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="size-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 disabled:opacity-30 transition-all">
+                                        <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                                    </button>
+                                    {getPageNumbers().map((page, i) => (
+                                        <button key={i} onClick={() => setCurrentPage(page as number)} className={`size-8 rounded-lg font-bold text-xs transition-all ${currentPage === page ? 'bg-primary text-white shadow-lg shadow-primary/10' : 'text-slate-500 hover:bg-slate-100'}`}>
+                                            {page}
+                                        </button>
+                                    ))}
+                                    <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="size-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 disabled:opacity-30 transition-all">
+                                        <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 

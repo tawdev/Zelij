@@ -1,5 +1,5 @@
-import { IsString, IsOptional, IsNumber, IsArray, IsBoolean, IsEnum, Min } from 'class-validator';
-import { PricingUnit, Finishing, Shape } from '../product.entity';
+import { IsString, IsOptional, IsNumber, IsArray, IsBoolean, Min } from 'class-validator';
+import { Finishing, Shape } from '../product.entity';
 
 export class CreateProductDto {
   @IsString()
@@ -72,10 +72,6 @@ export class CreateProductDto {
   @IsNumber()
   @IsOptional()
   thickness?: number;
-
-  @IsString()
-  @IsOptional()
-  pricingUnit?: string;
 
   @IsNumber()
   @IsOptional()
@@ -185,10 +181,6 @@ export class UpdateProductDto {
   @IsNumber()
   @IsOptional()
   thickness?: number;
-
-  @IsString()
-  @IsOptional()
-  pricingUnit?: string;
 
   @IsNumber()
   @IsOptional()

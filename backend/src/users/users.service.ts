@@ -24,7 +24,9 @@ export class UsersService {
     }
 
     const user = this.userRepository.create(userData);
-    return this.userRepository.save(user);
+    const saved = await this.userRepository.save(user);
+    const { password, ...result } = saved;
+    return result as User;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -55,7 +57,9 @@ export class UsersService {
     }
 
     Object.assign(user, updateData);
-    return this.userRepository.save(user);
+    const saved = await this.userRepository.save(user);
+    const { password, ...result } = saved;
+    return result as User;
   }
 
   async remove(id: number): Promise<void> {

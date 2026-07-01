@@ -53,7 +53,8 @@ export default function WishlistPage() {
             addToCart({
                 productId: p.id,
                 name: p.name,
-                price: Number(p.price),
+                price: Number(p.pricePerM2 || p.price),
+                unitPrice: Number(p.pricePerM2 || p.price),
                 imageUrl: p.imageUrl
             });
         });
@@ -137,7 +138,7 @@ export default function WishlistPage() {
                         {/* Product cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                             {products.map((product) => {
-                                const price = Number(product.price);
+                                const price = Number(product.pricePerM2 || product.price);
                                 const oldPrice = product.oldPrice ? Number(product.oldPrice) : null;
                                 const isSale = product.onSale || (oldPrice !== null && oldPrice > price);
 
@@ -211,7 +212,8 @@ export default function WishlistPage() {
                                                         addToCart({
                                                             productId: product.id,
                                                             name: product.name,
-                                                            price: Number(product.price),
+                                                            price: Number(product.pricePerM2 || product.price),
+                                                            unitPrice: Number(product.pricePerM2 || product.price),
                                                             imageUrl: product.imageUrl
                                                         });
                                                         showToast('Produit ajouté au panier !', 'success');
@@ -313,7 +315,7 @@ export default function WishlistPage() {
                                             {product.name}
                                         </h4>
                                         <span className="text-[12px] sm:text-[14px] font-black text-primary px-0.5">
-                                            {Number(product.price).toLocaleString('fr-MA')}
+                                            {Number(product.pricePerM2 || product.price).toLocaleString('fr-MA')}
                                             <span className="text-[9px] opacity-60 ml-1">MAD</span>
                                         </span>
                                     </Link>

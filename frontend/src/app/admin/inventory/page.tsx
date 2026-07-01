@@ -258,7 +258,6 @@ export default function AdminInventoryPage() {
                                                             onBlur={(e) => handleManualStockUpdate(product.id, e.target.value)}
                                                             onKeyDown={(e) => {
                                                                 if (e.key === 'Enter') {
-                                                                    handleManualStockUpdate(product.id, (e.target as HTMLInputElement).value);
                                                                     (e.target as HTMLInputElement).blur();
                                                                 }
                                                             }}

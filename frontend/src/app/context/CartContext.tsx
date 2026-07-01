@@ -10,6 +10,7 @@ export interface AreaMetadata {
   wastageApplied: boolean;
   finalAreaM2: number;
   boxesNeeded: number;
+  boxCoverageM2?: number;
 }
 
 export interface CartItem {
@@ -17,6 +18,7 @@ export interface CartItem {
   productId: number;
   name: string;
   price: number;
+  unitPrice?: number;
   imageUrl: string | null;
   slug?: string;
   quantity: number;
@@ -70,16 +72,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addToCart = useCallback(
     (item: Omit<CartItem, 'quantity' | 'boxes' | 'area' | 'cartItemId'>, quantity = 1, boxes?: number, area?: AreaMetadata) => {
       setCartItems((prev) => {
-        const key = area ? `${item.productId}-area` : `${item.productId}`;
-        const existing = prev.find((i) => {
-          if (area && i.area) {
-            return i.productId === item.productId &&
-              i.area.width === area.width &&
-              i.area.height === area.height &&
-              i.area.wastageApplied === area.wastageApplied;
-          }
-          return !i.area && i.productId === item.productId;
-        });
+        const existing = area ? prev.find((i) =>
+          i.productId === item.productId &&
+          i.area?.width === area.width &&
+          i.area?.height === area.height &&
+          i.area?.wastageApplied === area.wastageApplied
+        ) : prev.find((i) => i.productId === item.productId && !i.area);
         if (existing) {
           return prev.map((i) =>
             i === existing
@@ -115,14 +113,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (i.cartItemId !== cartItemId || !i.area) return i;
         const w = Number(width);
         const h = Number(height);
-        const oldArea = Number(i.area.totalAreaM2);
         const newArea = w * h;
-        const unitPrice = oldArea > 0 ? Number(i.price) / oldArea : 0;
+        const unitPrice = Number(i.unitPrice) || (Number(i.area.totalAreaM2) > 0 ? Number(i.price) / Number(i.area.totalAreaM2) : 0);
+        const coverage = i.area.boxCoverageM2 || 1;
+        const boxes = Math.ceil(newArea / coverage);
+        const finalArea = boxes * coverage;
         return {
           ...i,
           quantity: newArea,
           price: unitPrice * newArea,
-          area: { ...i.area, width: w, height: h, totalAreaM2: newArea },
+          unitPrice,
+          boxes,
+          area: {
+            ...i.area,
+            width: w,
+            height: h,
+            totalAreaM2: newArea,
+            boxesNeeded: boxes,
+            finalAreaM2: finalArea,
+          },
         };
       })
     );

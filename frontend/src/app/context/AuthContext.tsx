@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = (token: string, userData: User) => {
-    Cookies.set('auth_token', token, { expires: 7, secure: true, sameSite: 'strict' });
+    Cookies.set('auth_token', token, { expires: 7, secure: window.location.protocol === 'https:', sameSite: 'strict' });
     setUser(userData);
   };
 

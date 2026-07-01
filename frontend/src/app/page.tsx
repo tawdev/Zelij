@@ -203,7 +203,7 @@ export default function HomePage() {
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
-                  href="/produits?pricingUnit=per_square_meter"
+                  href="/produits"
                   className="group inline-flex items-center gap-3 px-8 py-4 border-2 border-white/10 hover:border-white/20 text-white rounded-lg font-bold text-sm uppercase tracking-wider transition-all"
                 >
                   <Ruler size={16} />
@@ -456,7 +456,7 @@ export default function HomePage() {
                 ))}
               </div>
               <Link
-                href="/produits?pricingUnit=per_square_meter"
+                href="/produits"
                 className="group inline-flex items-center gap-3 px-8 py-4 bg-accent hover:bg-accent-light text-white rounded-lg font-bold text-sm uppercase tracking-wider transition-all shadow-lg shadow-accent/20"
               >
                 <Ruler size={16} />

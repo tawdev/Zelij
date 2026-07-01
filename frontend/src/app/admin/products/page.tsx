@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { api, type Product, type ProductStats, type Brand, type Category } from '../../lib/api';
 import { useNotification } from '../../context/NotificationContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import DOMPurify from 'dompurify';
 
 function Skeleton({ className }: { className?: string }) {
   return <div className={`animate-pulse bg-slate-200 rounded ${className}`} />;
@@ -49,7 +50,7 @@ export default function AdminProductsPage() {
   const [newProduct, setNewProduct] = useState({
     name: '',
     sku: '',
-    price: '',
+    pricePerM2: '',
     oldPrice: '',
     stock: '',
     categoryId: '' as string | number,
@@ -118,7 +119,8 @@ export default function AdminProductsPage() {
       setIsSubmitting(true);
       const productData = {
         ...newProduct,
-        price: parseFloat(newProduct.price),
+        price: newProduct.pricePerM2 ? parseFloat(newProduct.pricePerM2) : 0,
+        pricePerM2: newProduct.pricePerM2 ? parseFloat(newProduct.pricePerM2) : null,
         oldPrice: newProduct.oldPrice ? parseFloat(newProduct.oldPrice) : null,
         stock: parseInt(newProduct.stock),
         categoryId: newProduct.categoryId ? Number(newProduct.categoryId) : null,
@@ -136,7 +138,7 @@ export default function AdminProductsPage() {
 
       setIsModalOpen(false);
       setEditingProduct(null);
-      setNewProduct({ name: '', sku: '', price: '', oldPrice: '', stock: '', categoryId: '', brandId: '', imageUrl: '', imageUrls: [], tags: [], description: '', isFeatured: false });
+      setNewProduct({ name: '', sku: '', pricePerM2: '', oldPrice: '', stock: '', categoryId: '', brandId: '', imageUrl: '', imageUrls: [], tags: [], description: '', isFeatured: false });
       setCurrentTag('');
       loadData(); // Refresh list
     } catch (err) {
@@ -151,7 +153,7 @@ export default function AdminProductsPage() {
     setNewProduct({
       name: product.name,
       sku: product.sku || '',
-      price: product.price.toString(),
+      pricePerM2: product.pricePerM2 ? product.pricePerM2.toString() : product.price.toString(),
       oldPrice: product.oldPrice ? product.oldPrice.toString() : '',
       stock: product.stock.toString(),
       categoryId: product.categoryId || product.category?.id || '',
@@ -238,7 +240,7 @@ export default function AdminProductsPage() {
           <button
             onClick={() => {
               setEditingProduct(null);
-              setNewProduct({ name: '', sku: '', price: '', oldPrice: '', stock: '', categoryId: '', brandId: '', imageUrl: '', imageUrls: [], tags: [], description: '', isFeatured: false });
+      setNewProduct({ name: '', sku: '', pricePerM2: '', oldPrice: '', stock: '', categoryId: '', brandId: '', imageUrl: '', imageUrls: [], tags: [], description: '', isFeatured: false });
               setCurrentTag('');
               setIsModalOpen(true);
             }}
@@ -373,7 +375,7 @@ export default function AdminProductsPage() {
                       )}
                     </td>
                     <td className="px-6 py-4 text-sm font-semibold text-slate-900">
-                      {Number(product.price).toFixed(2)} MAD
+                      {Number(product.pricePerM2 || product.price).toFixed(2)} MAD / m²
                     </td>
                     <td className="px-6 py-4">
                       <StockBar stock={product.stock} />
@@ -532,13 +534,14 @@ export default function AdminProductsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Prix (MAD)</label>
+                      <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Prix au m² (MAD)</label>
                       <input
                         required
                         type="number"
                         step="0.01"
-                        value={newProduct.price}
-                        onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                        min="0"
+                        value={newProduct.pricePerM2}
+                        onChange={(e) => setNewProduct({ ...newProduct, pricePerM2: e.target.value })}
                         className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm font-bold text-slate-700 transition-all"
                         placeholder="0.00"
                       />
@@ -704,8 +707,8 @@ export default function AdminProductsPage() {
                       <div
                         contentEditable
                         suppressContentEditableWarning
-                        onBlur={(e) => setNewProduct({ ...newProduct, description: e.currentTarget.innerHTML })}
-                        dangerouslySetInnerHTML={{ __html: newProduct.description }}
+                        onBlur={(e) => setNewProduct({ ...newProduct, description: DOMPurify.sanitize(e.currentTarget.innerHTML) })}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(newProduct.description) }}
                         className="w-full min-h-[150px] max-h-[300px] overflow-y-auto px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-medium text-slate-800 [&_h1]:text-lg [&_h1]:font-black [&_h1]:text-slate-900 [&_h1]:my-4 [&_p]:my-2 leading-relaxed"
                         data-placeholder="Décrivez les détails du produit, ses avantages..."
                       />

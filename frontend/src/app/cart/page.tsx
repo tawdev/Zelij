@@ -42,17 +42,22 @@ export default function ShoppingCartPage() {
             const orderPayload = {
                 invoiceNumber,
                 date: now.toISOString(),
-                items: cartItems.map(item => ({
-                    name: item.name,
-                    quantity: item.quantity,
-                    price: Number(item.price),
-                    imageUrl: item.imageUrl,
-                    width: item.area?.width,
-                    height: item.area?.height,
-                    areaM2: item.area?.totalAreaM2,
-                    boxes: item.boxes,
-                    isPerM2: !!item.area,
-                })),
+                items: cartItems.map(item => {
+                    const w = item.area?.width;
+                    const h = item.area?.height;
+                    const unitPrice = Number(item.unitPrice) || (w && h && w * h > 0 ? Number(item.price) / (w * h) : item.quantity > 0 ? Number(item.price) / item.quantity : 0);
+                    return {
+                        name: item.name,
+                        quantity: item.quantity,
+                        price: Number(item.price),
+                        unitPrice,
+                        imageUrl: item.imageUrl,
+                        width: w,
+                        height: h,
+                        areaM2: item.area?.totalAreaM2,
+                        boxes: item.boxes,
+                    };
+                }),
                 totalPrice: Number(totalPrice),
                 customerInfo,
             };

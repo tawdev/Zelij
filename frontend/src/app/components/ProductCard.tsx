@@ -27,10 +27,9 @@ export default function ProductCard({ product, className = '', imageClassName = 
   const productNumId = typeof product.id === 'string' ? parseInt(product.id, 10) : product.id;
   const isWishlisted = isInWishlist(productNumId);
 
-  const price = Number(product.price);
+  const price = Number(product.pricePerM2 || product.price);
   const oldPrice = product.oldPrice ? Number(product.oldPrice) : (product.onSale ? price * 1.2 : null);
   const isOnSale = product.onSale || (oldPrice && oldPrice > price);
-  const isPerM2 = product.pricingUnit === 'per_square_meter';
 
   const allImages = useMemo(() => {
     const images = [];
@@ -175,9 +174,7 @@ export default function ProductCard({ product, className = '', imageClassName = 
                     {oldPrice.toLocaleString('fr-MA', { minimumFractionDigits: 2 })} MAD
                   </span>
                 )}
-                {isPerM2 && (
                   <span className="text-[9px] text-accent font-bold uppercase tracking-wider">/ m²</span>
-                )}
               </div>
 
               <div className="mt-auto flex justify-start">
@@ -206,7 +203,7 @@ export default function ProductCard({ product, className = '', imageClassName = 
                 )}
                 <span className="font-bold text-primary leading-none text-sm sm:text-base truncate">
                   {price.toLocaleString('fr-MA', { minimumFractionDigits: 2 })} MAD
-                  {isPerM2 && <span className="text-[9px] text-accent font-bold uppercase tracking-wider ml-0.5">/m²</span>}
+                  <span className="text-[9px] text-accent font-bold uppercase tracking-wider ml-0.5">/m²</span>
                 </span>
               </div>
 

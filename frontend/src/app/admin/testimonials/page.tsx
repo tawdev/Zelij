@@ -11,6 +11,23 @@ export default function AdminTestimonialsPage() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTestimonial, setEditingTestimonial] = useState<Partial<Testimonial> | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const paginatedTestimonials = testimonials.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const totalPages = Math.ceil(testimonials.length / itemsPerPage);
+
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = [];
+        if (totalPages <= 3) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            if (currentPage <= 2) { pages.push(1, 2, 3); }
+            else if (currentPage >= totalPages - 1) { pages.push(totalPages - 2, totalPages - 1, totalPages); }
+            else { pages.push(currentPage - 1, currentPage, currentPage + 1); }
+        }
+        return pages;
+    };
 
     useEffect(() => {
         loadTestimonials();
@@ -112,8 +129,8 @@ export default function AdminTestimonialsPage() {
             <div className="flex-1 overflow-y-auto no-scrollbar p-6 md:p-8 min-h-0">
                 <div className="max-w-[1200px] mx-auto">
                     {testimonials.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-6">
-                            {testimonials.map((testimonial) => (
+                        <><div className="grid grid-cols-1 gap-6">
+                            {paginatedTestimonials.map((testimonial) => (
                                 <div key={testimonial.id} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between transition-all hover:shadow-md">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
@@ -167,6 +184,25 @@ export default function AdminTestimonialsPage() {
                                 </div>
                             ))}
                         </div>
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between pt-6">
+                                <span className="text-xs text-slate-500 font-medium">{testimonials.length} témoignage{testimonials.length !== 1 ? 's' : ''}</span>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="size-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 disabled:opacity-30 transition-all">
+                                        <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                                    </button>
+                                    {getPageNumbers().map((page, i) => (
+                                        <button key={i} onClick={() => setCurrentPage(page as number)} className={`size-8 rounded-lg font-bold text-xs transition-all ${currentPage === page ? 'bg-primary text-white shadow-lg shadow-primary/10' : 'text-slate-500 hover:bg-slate-100'}`}>
+                                            {page}
+                                        </button>
+                                    ))}
+                                    <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="size-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 disabled:opacity-30 transition-all">
+                                        <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        </>
                     ) : (
                         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
                             <span className="material-symbols-outlined text-[64px] text-slate-300 mb-4">format_quote</span>

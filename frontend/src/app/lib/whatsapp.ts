@@ -3,11 +3,11 @@ export interface OrderDetails {
         name: string;
         quantity: number;
         price: number;
+        unitPrice?: number;
         width?: number;
         height?: number;
         areaM2?: number;
         boxes?: number;
-        isPerM2?: boolean;
     }[];
     totalPrice: number;
     invoiceReference?: string;
@@ -47,15 +47,14 @@ export function generateWhatsAppLink(order: OrderDetails, customNumber?: string)
 
     const itemsList = order.items
         .map(item => {
-            const itemTotal = Number(item.price);
+            const area = item.areaM2 ?? (item.quantity > 0 ? item.quantity : 0);
             let details = `*${item.name}*\n`;
             if (item.width && item.height) {
-                details += `  ${item.width}m × ${item.height}m\n`;
-                details += `  ${formatPrice(itemTotal)}\n`;
+                details += `  ${item.width}m × ${item.height}m = ${area.toFixed(2).replace('.', ',')} m²\n`;
             } else {
-                details += `  ${item.quantity} × ${Number(item.price).toFixed(2)} MAD\n`;
-                details += `  ${formatPrice(itemTotal)}`;
+                details += `  ${area.toFixed(2).replace('.', ',')} m²\n`;
             }
+            details += `  ${formatPrice(Number(item.price))}`;
             return details;
         })
         .join("\n\n");

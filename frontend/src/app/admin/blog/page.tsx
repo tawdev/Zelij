@@ -5,6 +5,7 @@ import { api, type BlogPost, type Tip, type NewsletterSubscriber, type TagCount 
 import { Mail, Quote, Tag, FileText, Check, AlertCircle, Plus, Eye, Trash2, Edit } from 'lucide-react';
 import { useNotification } from '../../context/NotificationContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import DOMPurify from 'dompurify';
 
 function Skeleton({ className }: { className?: string }) {
     return <div className={`animate-pulse bg-slate-200 rounded ${className}`} />;
@@ -226,7 +227,7 @@ export default function AdminBlogPage() {
             setIsModalOpen(false);
             loadData();
         } catch (err: any) {
-            const errorMessage = err.response?.data?.message || err.message || 'Failed to save post';
+            const errorMessage = err.message || 'Failed to save post';
             showToast(errorMessage, 'error');
         } finally {
             setIsSubmitting(false);
@@ -281,7 +282,7 @@ export default function AdminBlogPage() {
             setIsTipModalOpen(false);
             loadData();
         } catch (err: any) {
-            const errorMessage = err.response?.data?.message || err.message || 'Failed to save tip';
+            const errorMessage = err.message || 'Failed to save tip';
             showToast(errorMessage, 'error');
         } finally {
             setIsSubmitting(false);
@@ -300,7 +301,7 @@ export default function AdminBlogPage() {
                     showToast('Abonné supprimé', 'success');
                     loadData();
                 } catch (err: any) {
-                    const errorMessage = err.response?.data?.message || err.message || 'Failed to remove subscriber';
+                    const errorMessage = err.message || 'Failed to remove subscriber';
                     showToast(errorMessage, 'error');
                 }
             }
@@ -313,7 +314,7 @@ export default function AdminBlogPage() {
             showToast('Statut de l\'astuce mis à jour', 'success');
             loadData();
         } catch (err: any) {
-            const errorMessage = err.response?.data?.message || err.message || 'Failed to update status';
+            const errorMessage = err.message || 'Failed to update status';
             showToast(errorMessage, 'error');
         }
     };
@@ -850,7 +851,7 @@ export default function AdminBlogPage() {
                                                 </div>
                                                 {showPreview ? (
                                                     <div className="w-full px-8 py-8 min-h-[400px] bg-white overflow-y-auto prose max-w-none">
-                                                        <div dangerouslySetInnerHTML={{ __html: form.content || '<p class="text-slate-300 italic">Aucun contenu à prévisualiser...</p>' }} className="blog-content-preview text-[16px] leading-[1.8] font-medium" />
+                                                        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(form.content || '<p class="text-slate-300 italic">Aucun contenu à prévisualiser...</p>') }} className="blog-content-preview text-[16px] leading-[1.8] font-medium" />
                                                     </div>
                                                 ) : (
                                                     <textarea

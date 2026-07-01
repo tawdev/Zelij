@@ -138,8 +138,6 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
         }
     });
 
-    const isPerM2 = product?.pricingUnit === 'per_square_meter';
-
     if (loading) {
         return (
             <div className="flex h-screen items-center justify-center bg-canvas">
@@ -173,16 +171,16 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
     const specRows = [
         { label: 'Référence (SKU)', value: product.sku || 'N/A' },
         { label: 'Catégorie', value: product.category?.name || 'N/A' },
-        { label: 'Type de vente', value: isPerM2 ? 'Au mètre carré' : 'À l\'unité' },
+        { label: 'Type de vente', value: 'Au mètre carré' },
         ...(product.finishing ? [{ label: 'Finition', value: product.finishing }] : []),
         ...(product.shape ? [{ label: 'Forme', value: product.shape }] : []),
         ...(product.thickness ? [{ label: 'Épaisseur', value: `${product.thickness} cm` }] : []),
         ...(product.formatWidth && product.formatHeight ? [{ label: 'Format carreau', value: `${product.formatWidth} × ${product.formatHeight} cm` }] : []),
         ...(product.boxCoverageM2 ? [{ label: 'Couverture par carton', value: `${Number(product.boxCoverageM2)} m²` }] : []),
         ...(product.boxWeight ? [{ label: 'Poids par carton', value: `${Number(product.boxWeight)} kg` }] : []),
-        ...(isPerM2 && product.pricePerM2 ? [{ label: 'Prix au m²', value: `${Number(product.pricePerM2).toFixed(2).replace('.', ',')} MAD` }] : []),
-        ...(isPerM2 && product.minOrderM2 ? [{ label: 'Commande minimum', value: `${Number(product.minOrderM2)} m²` }] : []),
-        ...(isPerM2 && product.stockM2 ? [{ label: 'Stock disponible', value: `${Number(product.stockM2).toFixed(2)} m²` }] : []),
+        ...(product.pricePerM2 ? [{ label: 'Prix au m²', value: `${Number(product.pricePerM2).toFixed(2).replace('.', ',')} MAD` }] : []),
+        ...(product.minOrderM2 ? [{ label: 'Commande minimum', value: `${Number(product.minOrderM2)} m²` }] : []),
+        ...(product.stockM2 ? [{ label: 'Stock disponible', value: `${Number(product.stockM2).toFixed(2)} m²` }] : []),
         { label: 'Stock (unités)', value: `${product.stock} unités` },
         { label: 'État', value: product.stock > 0 ? 'Disponible' : 'Indisponible' },
         { label: 'En promotion', value: product.onSale ? 'Oui' : 'Non' },
@@ -260,12 +258,10 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
 
                         {/* CENTER: Product Info */}
                         <div className="flex-1 min-w-0">
-                            {isPerM2 && (
-                                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-10 text-primary rounded-lg text-[10px] font-bold uppercase tracking-wider mb-3">
-                                    <Ruler className="w-3 h-3" />
-                                    Vendu au mètre carré
-                                </div>
-                            )}
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-10 text-primary rounded-lg text-[10px] font-bold uppercase tracking-wider mb-3">
+                                <Ruler className="w-3 h-3" />
+                                Vendu au mètre carré
+                            </div>
 
                             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-charcoal leading-tight mb-2">
                                 {product.name}
@@ -312,7 +308,7 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
 
                             {/* Stock Status */}
                             <p className={`text-sm font-semibold mb-3 ${product.stock > 0 ? 'text-accent-dark' : 'text-red-500'}`}>
-                                {product.stock > 0 ? (isPerM2 ? 'En stock (m²)' : 'En stock') : 'Rupture de stock'}
+                                {product.stock > 0 ? 'En stock (m²)' : 'Rupture de stock'}
                             </p>
 
                             {/* Short Description */}
@@ -340,8 +336,8 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
                                 </p>
                             )}
 
-                            {/* Format info for per m² */}
-                            {isPerM2 && product.formatWidth && product.formatHeight && (
+                            {/* Format info */}
+                            {product.formatWidth && product.formatHeight && (
                                 <div className="flex items-center gap-4 mb-4 p-3 bg-gray-50 rounded-xl border border-border">
                                     <Maximize2 className="w-4 h-4 text-primary shrink-0" />
                                     <span className="text-sm text-charcoal-soft font-medium">
@@ -364,24 +360,14 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
 
                             {/* Price */}
                             <div className="flex items-baseline flex-wrap gap-2 mb-4">
-                                {isPerM2 && product.pricePerM2 ? (
-                                    <>
-                                        <span className="text-2xl sm:text-3xl font-bold text-primary">
-                                            {Number(product.pricePerM2).toFixed(2).replace('.', ',')} MAD
-                                        </span>
-                                        <span className="text-sm text-charcoal-muted font-medium">/ m²</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <span className="text-2xl sm:text-3xl font-bold text-primary">
-                                            {Number(product.price).toFixed(2).replace('.', ',')} MAD
-                                        </span>
-                                        {product.oldPrice && product.oldPrice > product.price && (
-                                            <span className="text-sm sm:text-base text-charcoal-muted line-through">
-                                                {Number(product.oldPrice).toFixed(2).replace('.', ',')} MAD
-                                            </span>
-                                        )}
-                                    </>
+                                <span className="text-2xl sm:text-3xl font-bold text-primary">
+                                    {Number(product.pricePerM2 || product.price).toFixed(2).replace('.', ',')} MAD
+                                </span>
+                                <span className="text-sm text-charcoal-muted font-medium">/ m²</span>
+                                {product.oldPrice && product.oldPrice > product.price && (
+                                    <span className="text-sm sm:text-base text-charcoal-muted line-through">
+                                        {Number(product.oldPrice).toFixed(2).replace('.', ',')} MAD
+                                    </span>
                                 )}
                             </div>
 
@@ -471,6 +457,7 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
                                                 productId: Number(product.id),
                                                 name: product.name,
                                                 price: totalPrice,
+                                                unitPrice,
                                                 imageUrl: product.imageUrl,
                                                 slug: product.slug || undefined,
                                             },
@@ -484,6 +471,7 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
                                                 wastageApplied: false,
                                                 finalAreaM2: finalArea,
                                                 boxesNeeded: boxes,
+                                                boxCoverageM2: Number(product.boxCoverageM2) || 1,
                                             },
                                         );
                                     }}
@@ -495,60 +483,61 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
                                     </span>
                                 </button>
 
-                                    <button
-                                        onClick={() => {
-                                            const h = parseFloat(height);
-                                            const w = parseFloat(width);
-                                            let hasError = false;
-                                            setHeightErr(''); setWidthErr(''); setCalcError('');
+                                <button
+                                    onClick={() => {
+                                        if (!settings?.phoneNumber && !process.env.NEXT_PUBLIC_WHATSAPP_NUMBER) {
+                                            showToast('Numéro WhatsApp non configuré.', 'error');
+                                            return;
+                                        }
 
-                                            if (!height || isNaN(h) || h <= 0) {
-                                                setHeightErr('Hauteur invalide');
-                                                hasError = true;
-                                            }
-                                            if (h > 50) {
-                                                setHeightErr('Max 50 m');
-                                                hasError = true;
-                                            }
-                                            if (!width || isNaN(w) || w <= 0) {
-                                                setWidthErr('Largeur invalide');
-                                                hasError = true;
-                                            }
-                                            if (w > 50) {
-                                                setWidthErr('Max 50 m');
-                                                hasError = true;
-                                            }
-                                            if (hasError) return;
+                                        const h = parseFloat(height);
+                                        const w = parseFloat(width);
+                                        let hasError = false;
+                                        setHeightErr(''); setWidthErr(''); setCalcError('');
 
-                                            const area = h * w;
-                                            if (area <= 0) {
-                                                setCalcError('La surface doit être supérieure à 0.');
-                                                return;
-                                            }
-                                            const coverage = Number(product.boxCoverageM2) || 1;
-                                            const boxes = Math.ceil(area / coverage);
-                                            if (!settings?.phoneNumber && !process.env.NEXT_PUBLIC_WHATSAPP_NUMBER) {
-                                                showToast('Numéro WhatsApp non configuré.', 'error');
-                                                return;
-                                            }
-                                            const unitPrice = Number(product.pricePerM2 || product.price);
-                                            const totalPrice = area * unitPrice;
-                                            const now = new Date();
-                                            const invoiceRef = `DEV-${now.toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-                                            const whatsappLink = generateWhatsAppLink({
-                                                items: [{ name: product.name, quantity: area, price: totalPrice, width: w, height: h, areaM2: area, boxes, isPerM2: true }],
-                                                totalPrice,
-                                                invoiceReference: invoiceRef,
-                                            }, settings?.phoneNumber);
-                                            window.open(whatsappLink, '_blank');
-                                        }}
-                                        className="w-full h-[48px] bg-accent text-white rounded-xl hover:bg-accent-light transition-all flex items-center justify-center gap-2 shadow-sm active:scale-[0.98]"
-                                    >
-                                        <MessageCircle className="w-4 h-4" />
-                                        <span className="text-sm font-bold uppercase tracking-wider">
-                                            Commander via WhatsApp
-                                        </span>
-                                    </button>
+                                        if (!height || isNaN(h) || h <= 0) {
+                                            setHeightErr('Hauteur invalide');
+                                            hasError = true;
+                                        }
+                                        if (h > 50) {
+                                            setHeightErr('Max 50 m');
+                                            hasError = true;
+                                        }
+                                        if (!width || isNaN(w) || w <= 0) {
+                                            setWidthErr('Largeur invalide');
+                                            hasError = true;
+                                        }
+                                        if (w > 50) {
+                                            setWidthErr('Max 50 m');
+                                            hasError = true;
+                                        }
+                                        if (hasError) return;
+
+                                        const area = h * w;
+                                        if (area <= 0) {
+                                            setCalcError('La surface doit être supérieure à 0.');
+                                            return;
+                                        }
+                                        const coverage = Number(product.boxCoverageM2) || 1;
+                                        const boxes = Math.ceil(area / coverage);
+                                        const unitPrice = Number(product.pricePerM2 || product.price);
+                                        const totalPrice = area * unitPrice;
+                                        const now = new Date();
+                                        const invoiceRef = `DEV-${now.toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+                                        const whatsappLink = generateWhatsAppLink({
+                                            items: [{ name: product.name, quantity: area, price: totalPrice, unitPrice, width: w, height: h, areaM2: area, boxes }],
+                                            totalPrice,
+                                            invoiceReference: invoiceRef,
+                                        }, settings?.phoneNumber);
+                                        window.open(whatsappLink, '_blank');
+                                    }}
+                                    className="w-full h-[48px] bg-accent text-white rounded-xl hover:bg-accent-light transition-all flex items-center justify-center gap-2 shadow-sm active:scale-[0.98]"
+                                >
+                                    <MessageCircle className="w-4 h-4" />
+                                    <span className="text-sm font-bold uppercase tracking-wider">
+                                        Commander via WhatsApp
+                                    </span>
+                                </button>
                                 </div>
 
                             {/* Product Meta */}
