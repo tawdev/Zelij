@@ -2,6 +2,15 @@
  * Utility functions for the blog system.
  */
 
+import { useEffect } from 'react';
+
+export function usePageTitle(title: string) {
+    useEffect(() => {
+        document.title = `${title} | Zelij Admin`;
+        return () => { document.title = 'Zelij Admin'; };
+    }, [title]);
+}
+
 /**
  * Calculates the estimated reading time for a block of text or HTML.
  * Average reading speed is 200 words per minute.

@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import Link from 'next/link';
+import { usePageTitle } from '@/app/lib/utils';
+import { useEffect, useState, useCallback, useRef } from 'react';
+
 import { api, type Product, type ProductStats, type Brand, type Category } from '../../lib/api';
 import { useNotification } from '../../context/NotificationContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,7 +25,7 @@ function StockBar({ stock }: { stock: number }) {
   const color = stock <= 10 ? 'bg-amber-500' : 'bg-emerald-500';
   const textColor = stock <= 10 ? 'text-amber-600' : 'text-emerald-600';
   return (
-    <div className="flex-1 flex flex-col flex items-center gap-2">
+    <div className="flex-1 flex flex-col items-center gap-2">
       <div className="h-1.5 w-24 bg-slate-200 rounded-full overflow-hidden">
         <div className={`${color} h-full rounded-full`} style={{ width: `${pct}%` }} />
       </div>
@@ -37,7 +38,8 @@ function StockBar({ stock }: { stock: number }) {
 import { useSearchParams } from 'next/navigation';
 
 export default function AdminProductsPage() {
-  const { showToast, showConfirm } = useNotification();
+    usePageTitle('Products');
+    const { showToast, showConfirm } = useNotification();
   const searchParams = useSearchParams();
   const urlSearch = searchParams.get('search');
 
@@ -67,6 +69,7 @@ export default function AdminProductsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const descriptionRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState(urlSearch || '');
@@ -117,8 +120,10 @@ export default function AdminProductsPage() {
     e.preventDefault();
     try {
       setIsSubmitting(true);
+      const currentDescription = descriptionRef.current ? DOMPurify.sanitize(descriptionRef.current.innerHTML) : newProduct.description;
       const productData = {
         ...newProduct,
+        description: currentDescription,
         price: newProduct.pricePerM2 ? parseFloat(newProduct.pricePerM2) : 0,
         pricePerM2: newProduct.pricePerM2 ? parseFloat(newProduct.pricePerM2) : null,
         oldPrice: newProduct.oldPrice ? parseFloat(newProduct.oldPrice) : null,
@@ -705,6 +710,7 @@ export default function AdminProductsPage() {
                         </div>
                       </div>
                       <div
+                        ref={descriptionRef}
                         contentEditable
                         suppressContentEditableWarning
                         onBlur={(e) => setNewProduct({ ...newProduct, description: DOMPurify.sanitize(e.currentTarget.innerHTML) })}

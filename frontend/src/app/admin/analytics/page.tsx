@@ -1,5 +1,6 @@
 'use client';
 
+import { usePageTitle } from '@/app/lib/utils';
 import { useEffect, useState, useMemo } from 'react';
 import {
     LineChart,
@@ -46,13 +47,16 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function AdminAnalyticsPage() {
+    usePageTitle('Analytics');
     const [data, setData] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [activeRange, setActiveRange] = useState('Last 30 Days');
     const [customRange, setCustomRange] = useState<{ from?: string; to?: string }>({});
 
     const loadAnalytics = async () => {
         setLoading(true);
+        setError(null);
         try {
             let from: string | undefined;
             let to: string | undefined;
@@ -80,6 +84,7 @@ export default function AdminAnalyticsPage() {
             setData(res);
         } catch (err) {
             console.error('Failed to load analytics', err);
+            setError('Unable to load analytics data. Please check your connection and try again.');
         } finally {
             setLoading(false);
         }
@@ -171,6 +176,18 @@ export default function AdminAnalyticsPage() {
                             <Skeleton className="h-[500px] rounded-xl" />
                             <Skeleton className="h-[500px] rounded-xl" />
                         </div>
+                    </div>
+                ) : error ? (
+                    <div className="flex flex-col items-center justify-center py-24 text-center">
+                        <div className="w-20 h-20 rounded-2xl bg-red-50 flex items-center justify-center mb-8">
+                            <span className="material-symbols-outlined text-[40px] text-red-500">error_outline</span>
+                        </div>
+                        <h3 className="text-2xl font-black text-slate-900 mb-3">Failed to Load Analytics</h3>
+                        <p className="text-slate-400 font-bold text-center max-w-sm leading-relaxed mb-8">{error}</p>
+                        <button onClick={() => { setError(null); loadAnalytics(); }} className="px-10 py-4 bg-[#BF1737] text-white text-[13px] font-black rounded-2xl hover:bg-[#A3142F] transition-all transform hover:-translate-y-1 active:scale-95 shadow-xl shadow-[#BF1737]/20 flex items-center gap-2 uppercase tracking-widest">
+                            <span className="material-symbols-outlined text-[18px]">refresh</span>
+                            Retry
+                        </button>
                     </div>
                 ) : data && data.kpis.totalProducts > 0 ? (
                     <div className="space-y-8 animate-in fade-in duration-500">

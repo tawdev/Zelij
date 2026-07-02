@@ -1,5 +1,6 @@
 'use client';
 
+import { usePageTitle } from '@/app/lib/utils';
 import React, { useState, useEffect } from 'react';
 import { api, ContactMessage } from '../../lib/api';
 import { useNotification } from '../../context/NotificationContext';
@@ -9,6 +10,7 @@ const formatDate = (dateString: string, options: Intl.DateTimeFormatOptions) => 
 };
 
 export default function AdminMessagesPage() {
+    usePageTitle('Messages');
     const { showToast, showConfirm } = useNotification();
     const [messages, setMessages] = useState<ContactMessage[]>([]);
     const [loading, setLoading] = useState(true);

@@ -1,5 +1,6 @@
 'use client';
 
+import { usePageTitle } from '@/app/lib/utils';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { api, type Product } from '../../lib/api';
 import { useNotification } from '../../context/NotificationContext';
@@ -10,6 +11,7 @@ function Skeleton({ className }: { className?: string }) {
 
 
 export default function AdminInventoryPage() {
+    usePageTitle('Inventory');
     const { showToast } = useNotification();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);

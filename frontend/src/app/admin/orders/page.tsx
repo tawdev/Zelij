@@ -1,5 +1,6 @@
 'use client';
 
+import { usePageTitle } from '@/app/lib/utils';
 import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { api, type Order, type OrderStats } from '../../lib/api';
@@ -63,7 +64,8 @@ const STATUS_FILTERS: { label: string; value: string }[] = [
 ];
 
 export default function AdminOrdersPage() {
-  const { showToast } = useNotification();
+    usePageTitle('Orders');
+    const { showToast } = useNotification();
   const searchParams = useSearchParams();
   const urlSearch = searchParams.get('search');
 

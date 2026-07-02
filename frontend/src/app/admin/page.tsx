@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePageTitle } from '@/app/lib/utils';
 import { api, type Order, type ProductStats, type OrderStats, type Product } from '../lib/api';
 
 // ─── Loading skeleton ─────────────────────────────────────────────────────────
@@ -28,6 +29,7 @@ function StatusBadge({ status }: { status: Order['status'] }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function AdminDashboardPage() {
+  usePageTitle('Dashboard');
   const [productStats, setProductStats] = useState<ProductStats | null>(null);
   const [orderStats, setOrderStats] = useState<OrderStats | null>(null);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);

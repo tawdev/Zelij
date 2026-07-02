@@ -1,14 +1,17 @@
 'use client';
 
+import { usePageTitle } from '@/app/lib/utils';
 import { useEffect, useState } from 'react';
 import { api, type Brand } from '../../lib/api';
 import { useNotification } from '../../context/NotificationContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminBrandsPage() {
+    usePageTitle('Brands');
     const { showToast, showConfirm } = useNotification();
     const [brands, setBrands] = useState<Brand[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
     const [formData, setFormData] = useState({ name: '', logoUrl: '', isActive: true });
@@ -33,11 +36,13 @@ export default function AdminBrandsPage() {
 
     const loadBrands = async () => {
         setLoading(true);
+        setError(null);
         try {
             const data = await api.getBrands();
             setBrands(data);
         } catch (err) {
             console.error('Failed to load brands:', err);
+            setError('Unable to load brands. Please check your connection and try again.');
         } finally {
             setLoading(false);
         }
@@ -100,6 +105,7 @@ export default function AdminBrandsPage() {
             loadBrands();
         } catch (err) {
             console.error('Failed to toggle brand:', err);
+            showToast(err instanceof Error ? err.message : 'Échec de la mise à jour du statut', 'error');
         }
     };
 
@@ -244,6 +250,18 @@ export default function AdminBrandsPage() {
             {loading ? (
                 <div className="flex items-center justify-center py-20 flex-1">
                     <div className="animate-spin rounded-full h-10 w-10 border-[3px] border-primary border-t-transparent"></div>
+                </div>
+            ) : error ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-20 h-20 rounded-2xl bg-red-50 flex items-center justify-center mb-4">
+                        <span className="material-symbols-outlined text-[40px] text-red-500">error_outline</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-800 mb-2">Erreur de chargement</h3>
+                    <p className="text-slate-500 mb-6">{error}</p>
+                    <button onClick={loadBrands} className="px-6 py-3 bg-[#BF1737] text-white text-[13px] font-black rounded-2xl hover:bg-[#A3142F] transition-all shadow-lg shadow-[#BF1737]/20 flex items-center gap-2 uppercase tracking-widest">
+                        <span className="material-symbols-outlined text-[18px]">refresh</span>
+                        Réessayer
+                    </button>
                 </div>
             ) : brands.length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 shadow-sm">

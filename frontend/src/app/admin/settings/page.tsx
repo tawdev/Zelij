@@ -1,11 +1,13 @@
 'use client';
 
+import { usePageTitle } from '@/app/lib/utils';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNotification } from '../../context/NotificationContext';
 import { useSettings } from '../../context/SettingsContext';
 import { api, type StoreSettings } from '../../lib/api';
 
 export default function AdminSettingsPage() {
+    usePageTitle('Settings');
     const { showToast } = useNotification();
     const { refreshSettings } = useSettings();
     const [loading, setLoading] = useState(true);
@@ -169,6 +171,7 @@ export default function AdminSettingsPage() {
                                     <label className="text-[13px] font-bold text-slate-600">Store Name</label>
                                     <input
                                         type="text"
+                                        required
                                         value={settings.storeName}
                                         onChange={(e) => setSettings({ ...settings, storeName: e.target.value })}
                                         className="w-full h-11 px-4 rounded-xl bg-white border border-slate-200 text-[14px] font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all"
@@ -178,6 +181,7 @@ export default function AdminSettingsPage() {
                                     <label className="text-[13px] font-bold text-slate-600">Support Email</label>
                                     <input
                                         type="email"
+                                        required
                                         value={settings.supportEmail}
                                         onChange={(e) => setSettings({ ...settings, supportEmail: e.target.value })}
                                         className="w-full h-11 px-4 rounded-xl bg-white border border-slate-200 text-[14px] font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all"
@@ -190,6 +194,7 @@ export default function AdminSettingsPage() {
                                     <label className="text-[13px] font-bold text-slate-600">Phone Number</label>
                                     <input
                                         type="tel"
+                                        required
                                         value={settings.phoneNumber}
                                         onChange={(e) => setSettings({ ...settings, phoneNumber: e.target.value })}
                                         className="w-full h-11 px-4 rounded-xl bg-white border border-slate-200 text-[14px] font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all"

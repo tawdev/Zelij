@@ -1,11 +1,13 @@
 'use client';
 
+import { usePageTitle } from '@/app/lib/utils';
 import React, { useState, useEffect } from 'react';
 import { api, Testimonial } from '../../lib/api';
 import { useNotification } from '../../context/NotificationContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminTestimonialsPage() {
+    usePageTitle('Testimonials');
     const { showToast, showConfirm } = useNotification();
     const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
     const [loading, setLoading] = useState(true);

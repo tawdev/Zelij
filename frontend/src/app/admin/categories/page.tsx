@@ -1,5 +1,6 @@
 'use client';
 
+import { usePageTitle } from '@/app/lib/utils';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { api, type Category } from '../../lib/api';
 import { useNotification } from '../../context/NotificationContext';
@@ -12,6 +13,7 @@ function Skeleton({ className }: { className?: string }) {
 
 
 export default function AdminCategoriesPage() {
+    usePageTitle('Categories');
     const { showToast, showConfirm } = useNotification();
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);

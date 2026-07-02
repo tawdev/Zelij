@@ -1,11 +1,13 @@
 'use client';
 
+import { usePageTitle } from '@/app/lib/utils';
 import React, { useState, useEffect } from 'react';
 import { api, type User } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import ProtectedRoute from '../../components/auth/ProtectedRoute';
 
 export default function UsersManagementPage() {
+    usePageTitle('Users');
     const { user: currentUser } = useAuth();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);

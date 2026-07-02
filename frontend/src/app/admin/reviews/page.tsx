@@ -1,10 +1,12 @@
 'use client';
 
+import { usePageTitle } from '@/app/lib/utils';
 import React, { useState, useEffect } from 'react';
 import { api, Review } from '../../lib/api';
 import { useNotification } from '../../context/NotificationContext';
 
 export default function AdminReviewsPage() {
+    usePageTitle('Reviews');
     const { showToast } = useNotification();
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(true);

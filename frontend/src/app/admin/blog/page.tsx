@@ -1,5 +1,6 @@
 'use client';
 
+import { usePageTitle } from '@/app/lib/utils';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { api, type BlogPost, type Tip, type NewsletterSubscriber, type TagCount } from '../../lib/api';
 import { Mail, Quote, Tag, FileText, Check, AlertCircle, Plus, Eye, Trash2, Edit } from 'lucide-react';
@@ -13,6 +14,7 @@ function Skeleton({ className }: { className?: string }) {
 
 
 export default function AdminBlogPage() {
+    usePageTitle('Blog');
     const { showToast, showConfirm } = useNotification();
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
